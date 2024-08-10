@@ -2,7 +2,9 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ButtonBar?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
@@ -36,6 +38,11 @@
             <ListView fx:id="displayedwords" prefHeight="388.0" prefWidth="215.0" />
          </children>
       </HBox>
-      <Button fx:id="calculate" mnemonicParsing="false" onAction="#calculate" text="Calculate" />
+      <ButtonBar prefHeight="40.0" prefWidth="200.0">
+        <buttons>
+            <Button fx:id="calculate" mnemonicParsing="false" onAction="#calculate" text="Calculate" />
+            <MenuButton fx:id="languageButton" mnemonicParsing="false" />
+        </buttons>
+      </ButtonBar>
    </children>
 </VBox>

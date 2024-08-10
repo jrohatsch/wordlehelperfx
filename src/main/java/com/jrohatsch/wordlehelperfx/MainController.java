@@ -2,12 +2,11 @@ package com.jrohatsch.wordlehelperfx;
 
 import javafx.event.EventTarget;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 
 import java.util.List;
+import java.util.Map;
 
 public class MainController {
     @FXML
@@ -20,19 +19,32 @@ public class MainController {
     private List<String> wordsToTry;
     @FXML
     private ListView<String> displayedwords;
+    @FXML
+    private MenuButton languageButton;
+    private final Map<String, String> dictionaryLocation = Map.of("Deutsch", "wortliste.txt", "English" , "wortliste_eng.txt");
+
 
     public void init(){
         currentPosition = new GridPosition(grid.getRowCount()-1, grid.getColumnCount() - 1);
         grid.setGridLinesVisible(false);
         resultSet = new ResultSet(grid.getRowCount()-1, grid.getColumnCount()-1);
         wordsToTry = FilterWords.readWordList(List.of(getClass().getResource("wortliste.txt").getPath()));
-        System.out.println(wordsToTry.size());
+
+        for(var entry : dictionaryLocation.entrySet()){
+            var item = new MenuItem();
+            item.setText(entry.getKey());
+            item.setOnAction(actionEvent -> {
+                languageButton.setText(item.getText());
+            });
+            languageButton.getItems().add(item);
+        }
+        languageButton.setText("Deutsch");
     }
 
     @FXML
     public void calculate(){
         System.out.println(resultSet);
-        wordsToTry = FilterWords.readWordList(List.of(getClass().getResource("wortliste.txt").getPath()));
+        wordsToTry = FilterWords.readWordList(List.of(getClass().getResource(dictionaryLocation.get(languageButton.getText())).getPath()));
 
         var input = FilterWords.convert(resultSet);
         input.forEach(entry -> {
