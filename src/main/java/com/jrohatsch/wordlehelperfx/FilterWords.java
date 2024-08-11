@@ -1,9 +1,6 @@
 package com.jrohatsch.wordlehelperfx;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
@@ -72,6 +69,11 @@ public class FilterWords {
         });
 
         return words;
+    }
+
+    public static List<String> readWordList(InputStream input){
+        var reader = new BufferedReader(new InputStreamReader(input));
+        return reader.lines().filter(word -> word.length() == 5).collect(Collectors.toList());
     }
 
     public static ArrayList<String> readWordList(List<String> paths) {

@@ -5,8 +5,15 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class MainController {
     @FXML
@@ -24,11 +31,11 @@ public class MainController {
     private final Map<String, String> dictionaryLocation = Map.of("Deutsch", "wortliste.txt", "English" , "wortliste_eng.txt");
 
 
-    public void init(){
+    public void init() throws IOException {
         currentPosition = new GridPosition(grid.getRowCount()-1, grid.getColumnCount() - 1);
         grid.setGridLinesVisible(false);
         resultSet = new ResultSet(grid.getRowCount()-1, grid.getColumnCount()-1);
-        wordsToTry = FilterWords.readWordList(List.of(getClass().getResource("wortliste.txt").getPath()));
+        wordsToTry = FilterWords.readWordList(getClass().getResourceAsStream("wortliste.txt"));
 
         for(var entry : dictionaryLocation.entrySet()){
             var item = new MenuItem();
@@ -44,7 +51,7 @@ public class MainController {
     @FXML
     public void calculate(){
         System.out.println(resultSet);
-        wordsToTry = FilterWords.readWordList(List.of(getClass().getResource(dictionaryLocation.get(languageButton.getText())).getPath()));
+        wordsToTry = FilterWords.readWordList(getClass().getResourceAsStream(dictionaryLocation.get(languageButton.getText())));
 
         var input = FilterWords.convert(resultSet);
         input.forEach(entry -> {
