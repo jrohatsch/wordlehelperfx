@@ -3,9 +3,7 @@ package com.jrohatsch.wordlehelperfx;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Dictionary {
@@ -17,17 +15,17 @@ public class Dictionary {
 
     private static List<String> readWordList(InputStream input) {
         var reader = new BufferedReader(new InputStreamReader(input));
-        return reader.lines().filter(word -> word.length() == 5).map(word -> word.toLowerCase()).distinct().collect(Collectors.toList());
+        return reader.lines().filter(word -> word.length() == 5).map(String::toLowerCase).distinct().collect(Collectors.toList());
     }
 
     public List<String> loadWordlist(String language) {
         if (!cache.containsKey(language)) {
             loadToCache(language);
         }
-        return cache.get(language);
+        return new ArrayList<>(cache.get(language));
     }
 
-    public List<String> getLanguages(){
+    public List<String> getLanguages() {
         return List.of("Deutsch", "English");
     }
 

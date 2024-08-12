@@ -7,16 +7,15 @@ import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.GridPane;
 
-import java.io.IOException;
 import java.util.List;
 
 public class MainController {
     @FXML
     private GridPane grid;
+    @SuppressWarnings("unused")
     @FXML
     private Button calculate;
     private GridPosition currentPosition;
-    private final String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private ResultSet resultSet;
     private List<String> wordsToTry;
     @FXML
@@ -25,7 +24,7 @@ public class MainController {
     private MenuButton languageButton;
     private Dictionary dictionary;
 
-    public void init() throws IOException {
+    public void init() {
         currentPosition = new GridPosition(grid.getRowCount() - 1, grid.getColumnCount() - 1);
         grid.setGridLinesVisible(false);
         resultSet = new ResultSet(grid.getRowCount() - 1, grid.getColumnCount() - 1);
@@ -35,9 +34,7 @@ public class MainController {
         for (var name : dictionary.getLanguages()) {
             var item = new MenuItem();
             item.setText(name);
-            item.setOnAction(actionEvent -> {
-                languageButton.setText(item.getText());
-            });
+            item.setOnAction(actionEvent -> languageButton.setText(item.getText()));
             languageButton.getItems().add(item);
         }
         languageButton.setText(languages.get(0));
@@ -45,13 +42,10 @@ public class MainController {
 
     @FXML
     public void calculate() {
-        System.out.println(resultSet);
         wordsToTry = dictionary.loadWordlist(languageButton.getText());
 
         var input = FilterWords.convert(resultSet);
-        input.forEach(entry -> {
-            wordsToTry = FilterWords.filterWords(wordsToTry, entry.getKey(), entry.getValue());
-        });
+        input.forEach(entry -> wordsToTry = FilterWords.filterWords(wordsToTry, entry.getKey(), entry.getValue()));
 
         displayedwords.getItems().clear();
         wordsToTry.forEach(word -> displayedwords.getItems().add(word.toUpperCase()));
@@ -71,6 +65,7 @@ public class MainController {
             return;
         }
 
+        String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         if (!alphabet.contains(character)) {
             return;
         }

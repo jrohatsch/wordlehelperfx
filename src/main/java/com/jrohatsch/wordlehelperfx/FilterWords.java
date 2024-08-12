@@ -1,9 +1,5 @@
 package com.jrohatsch.wordlehelperfx;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -63,7 +59,7 @@ public class FilterWords {
             }
         }
 
-        not_contained_chars.removeIf(markedToDelete -> contained_chars.contains(markedToDelete));
+        not_contained_chars.removeIf(contained_chars::contains);
 
         not_contained_chars.forEach((String not_contained) -> {
             Predicate<String> predicate = a -> (a.contains(not_contained));
@@ -74,35 +70,4 @@ public class FilterWords {
     }
 
 
-    public static ArrayList<String> readWordList(List<String> paths) {
-        ArrayList<String> words = new ArrayList<String>();
-
-        var it = paths.iterator();
-
-        while (it.hasNext()) {
-            try {
-                File f = new File(it.next());
-
-                try (BufferedReader b = new BufferedReader(new FileReader(f))) {
-                    String readLine = "";
-
-                    while ((readLine = b.readLine()) != null) {
-
-                        readLine = readLine.toLowerCase();
-
-                        if (readLine.length() == 5 && !readLine.contains("-") && !readLine.contains("ä")
-                                && !readLine.contains("ö") && !readLine.contains("ü") && !words.contains(readLine)) {
-                            words.add(readLine.toLowerCase());
-                        }
-                    }
-                }
-
-            } catch (
-
-                    IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return words;
-    }
 }

@@ -21,8 +21,6 @@ public class WordleHelperFx extends Application {
         stage.setTitle("WordleHelperFx");
         stage.setScene(scene);
         stage.show();
-        scene.setOnKeyReleased(keyEvent -> {
-            controller.handleKeyPressed(keyEvent.getCode().getName());
-        });
+        scene.setOnKeyReleased(keyEvent -> controller.handleKeyPressed(keyEvent.getCode().getName()));
     }
 }

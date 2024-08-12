@@ -1,9 +1,5 @@
 package com.jrohatsch.wordlehelperfx;
 
-enum LetterState {
-    NOT_IN_WORD, IN_WORD, IN_WORD_AND_CORRECT_POSITION
-}
-
 public class ResultSet {
     Letter[][] letters;
 
@@ -19,12 +15,11 @@ public class ResultSet {
 
     public void updateState(String letter, int columnIndex, int rowIndex) {
         if (letters[rowIndex][columnIndex] != null) {
-            var updatedState = switch (letters[rowIndex][columnIndex].letterState) {
+            letters[rowIndex][columnIndex].letterState = switch (letters[rowIndex][columnIndex].letterState) {
                 case IN_WORD -> LetterState.IN_WORD_AND_CORRECT_POSITION;
                 case IN_WORD_AND_CORRECT_POSITION -> LetterState.NOT_IN_WORD;
                 case NOT_IN_WORD -> LetterState.IN_WORD;
             };
-            letters[rowIndex][columnIndex].letterState = updatedState;
         } else {
             var newLetter = new Letter();
             newLetter.letter = letter;
@@ -58,9 +53,3 @@ public class ResultSet {
     }
 }
 
-class Letter {
-    String letter;
-    LetterState letterState;
-
-
-}
