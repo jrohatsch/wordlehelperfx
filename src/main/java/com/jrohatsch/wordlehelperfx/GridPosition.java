@@ -1,13 +1,13 @@
 package com.jrohatsch.wordlehelperfx;
 
 public class GridPosition {
-    private int rowPosition;
-    private int columnPosition;
     private final int maxRowPosition;
     private final int maxColumnPosition;
+    private int rowPosition;
+    private int columnPosition;
     private boolean readyForNextPosition;
 
-    public GridPosition(int maxRowPosition, int maxColumnPosition){
+    public GridPosition(int maxRowPosition, int maxColumnPosition) {
         rowPosition = 0;
         columnPosition = 0;
         this.maxRowPosition = maxRowPosition;
@@ -19,14 +19,14 @@ public class GridPosition {
         return rowPosition;
     }
 
-    public int getColumnPosition(){
+    public int getColumnPosition() {
         return columnPosition;
     }
 
-    public void incrementPosition(){
-        if(columnPosition < maxColumnPosition){
+    public void incrementPosition() {
+        if (columnPosition < maxColumnPosition) {
             columnPosition++;
-        } else if(columnPosition == maxColumnPosition && rowPosition < maxRowPosition){
+        } else if (columnPosition == maxColumnPosition && rowPosition < maxRowPosition) {
             columnPosition = 0;
             rowPosition++;
         } else {
@@ -34,14 +34,14 @@ public class GridPosition {
         }
     }
 
-    public void decrementPosition(){
-        if(columnPosition > 0){
+    public void decrementPosition() {
+        if (columnPosition > 0) {
             columnPosition--;
-        } else if(columnPosition == 0 && rowPosition > 0){
+        } else if (columnPosition == 0 && rowPosition > 0) {
             columnPosition = maxColumnPosition;
             rowPosition--;
         }
-        if(!readyForNextPosition){
+        if (!readyForNextPosition) {
             readyForNextPosition = true;
         }
     }

@@ -1,7 +1,9 @@
 package com.jrohatsch.wordlehelperfx;
 
-import java.io.*;
-import java.util.AbstractMap;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -11,14 +13,14 @@ import java.util.stream.Collectors;
 public class FilterWords {
 
 
-    public static List<Map.Entry<String,String>> convert(ResultSet resultSet){
-        List<Map.Entry<String,String>> out = new ArrayList<>();
-        for(Letter[] word : resultSet.letters){
+    public static List<Map.Entry<String, String>> convert(ResultSet resultSet) {
+        List<Map.Entry<String, String>> out = new ArrayList<>();
+        for (Letter[] word : resultSet.letters) {
             StringBuilder wordBuilder = new StringBuilder();
             StringBuilder stateBuilder = new StringBuilder();
 
-            for(Letter letter : word){
-                if(letter == null){
+            for (Letter letter : word) {
+                if (letter == null) {
                     continue;
                 }
                 wordBuilder.append(letter.letter);
@@ -27,7 +29,7 @@ public class FilterWords {
             out.add(Map.entry(wordBuilder.toString().toLowerCase(), stateBuilder.toString()));
         }
 
-        out = out.stream().filter(entry -> entry.getKey().length()==5 && entry.getValue().length()==5).collect(Collectors.toList());
+        out = out.stream().filter(entry -> entry.getKey().length() == 5 && entry.getValue().length() == 5).collect(Collectors.toList());
 
         return out;
     }
@@ -71,10 +73,6 @@ public class FilterWords {
         return words;
     }
 
-    public static List<String> readWordList(InputStream input){
-        var reader = new BufferedReader(new InputStreamReader(input));
-        return reader.lines().filter(word -> word.length() == 5).collect(Collectors.toList());
-    }
 
     public static ArrayList<String> readWordList(List<String> paths) {
         ArrayList<String> words = new ArrayList<String>();
