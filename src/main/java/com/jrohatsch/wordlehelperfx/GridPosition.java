@@ -15,12 +15,8 @@ public class GridPosition {
         readyForNextPosition = true;
     }
 
-    public int getRowPosition() {
-        return rowPosition;
-    }
-
-    public int getColumnPosition() {
-        return columnPosition;
+    public Position getPosition() {
+        return new Position(columnPosition, rowPosition);
     }
 
     public void incrementPosition() {

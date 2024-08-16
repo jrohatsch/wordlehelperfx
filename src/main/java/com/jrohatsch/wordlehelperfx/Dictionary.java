@@ -7,15 +7,17 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Dictionary {
+    private final int WORD_LENGTH;
     private final Map<String, List<String>> cache;
 
-    public Dictionary() {
+    public Dictionary(int wordLength) {
         cache = new HashMap<>();
+        WORD_LENGTH = wordLength;
     }
 
-    private static List<String> readWordList(InputStream input) {
+    private List<String> readWordList(InputStream input) {
         var reader = new BufferedReader(new InputStreamReader(input));
-        return reader.lines().filter(word -> word.length() == 5).map(String::toLowerCase).distinct().collect(Collectors.toList());
+        return reader.lines().filter(word -> word.length() == WORD_LENGTH).map(String::toUpperCase).distinct().collect(Collectors.toList());
     }
 
     public List<String> loadWordlist(String language) {
@@ -26,7 +28,7 @@ public class Dictionary {
     }
 
     public List<String> getLanguages() {
-        return List.of("Deutsch", "English");
+        return Arrays.stream(Language.values()).map(language -> language.displayedName).collect(Collectors.toList());
     }
 
     private void loadToCache(String language) {
@@ -35,12 +37,25 @@ public class Dictionary {
         cache.put(language, readWordList(inputStream));
     }
 
-    private String getDictionaryFileName(String language) {
-        return switch (language) {
-            case "Deutsch" -> "wortliste.txt";
-            case "English" -> "wortliste_eng.txt";
-            default -> "wortliste_eng_txt";
-        };
+    private String getDictionaryFileName(String languageName) {
+        var foundLanguage = Arrays.stream(Language.values()).filter(language -> language.displayedName.equals(languageName)).findFirst();
+        if (foundLanguage.isEmpty()) {
+            return Language.ENG.fileName;
+        } else {
+            return foundLanguage.get().fileName;
+        }
+    }
+
+    private enum Language {
+        GER("wortliste.txt", "Deutsch"),
+        ENG("wortliste_eng.txt", "English");
+        final String fileName;
+        final String displayedName;
+
+        Language(String fileName, String displayedName) {
+            this.fileName = fileName;
+            this.displayedName = displayedName;
+        }
     }
 }
 

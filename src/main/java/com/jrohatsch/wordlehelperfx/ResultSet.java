@@ -1,5 +1,9 @@
 package com.jrohatsch.wordlehelperfx;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class ResultSet {
     Letter[][] letters;
 
@@ -7,18 +11,37 @@ public class ResultSet {
         letters = new Letter[maxRowCount + 1][maxColumnCount + 1];
     }
 
-    public void initState(String letter, int columnIndex, int rowIndex) {
+    private void initState(String letter, int columnIndex, int rowIndex) {
         letters[rowIndex][columnIndex] = new Letter();
         letters[rowIndex][columnIndex].letter = letter;
-        letters[rowIndex][columnIndex].letterState = LetterState.NOT_IN_WORD;
+
+        // check if the letter was already correct at that position
+        if (rowIndex > 0) {
+            var previousRowLetter = letters[rowIndex - 1][columnIndex];
+            if (previousRowLetter.letter.equals(letter) && previousRowLetter.letterState == LetterState.IN_WORD_AND_CORRECT_POSITION) {
+                letters[rowIndex][columnIndex].letterState = LetterState.IN_WORD_AND_CORRECT_POSITION;
+            } else {
+                letters[rowIndex][columnIndex].letterState = LetterState.NOT_IN_WORD;
+            }
+        } else {
+            letters[rowIndex][columnIndex].letterState = LetterState.NOT_IN_WORD;
+        }
     }
 
-    public void updateState(String letter, int columnIndex, int rowIndex) {
+    public void initState(String letter, Position position) {
+        initState(letter, position.column(), position.row());
+    }
+
+    public void updateState(String letter, Position position) {
+        updateState(letter, position.column(), position.row());
+    }
+
+    private void updateState(String letter, int columnIndex, int rowIndex) {
         if (letters[rowIndex][columnIndex] != null) {
             letters[rowIndex][columnIndex].letterState = switch (letters[rowIndex][columnIndex].letterState) {
-                case IN_WORD -> LetterState.IN_WORD_AND_CORRECT_POSITION;
+                case IN_WORD_OTHER_POSITION -> LetterState.IN_WORD_AND_CORRECT_POSITION;
                 case IN_WORD_AND_CORRECT_POSITION -> LetterState.NOT_IN_WORD;
-                case NOT_IN_WORD -> LetterState.IN_WORD;
+                case NOT_IN_WORD -> LetterState.IN_WORD_OTHER_POSITION;
             };
         } else {
             var newLetter = new Letter();
@@ -28,7 +51,7 @@ public class ResultSet {
         }
     }
 
-    public LetterState getState(int columnIndex, int rowIndex) {
+    private LetterState getState(int columnIndex, int rowIndex) {
         return letters[rowIndex][columnIndex].letterState;
     }
 
@@ -48,8 +71,16 @@ public class ResultSet {
         return stringBuilder.toString();
     }
 
-    public void remove(int columnPosition, int rowPosition) {
-        letters[rowPosition][columnPosition] = null;
+    public void remove(Position position) {
+        letters[position.row()][position.column()] = null;
+    }
+
+    public LetterState getState(Position position) {
+        return getState(position.column(), position.row());
+    }
+
+    public List<Letter[]> getCompleteWords() {
+        return Arrays.stream(letters).filter(word -> Arrays.stream(word).allMatch(letter -> letter != null && letter.letter != null && letter.letterState != null)).collect(Collectors.toList());
     }
 }
 

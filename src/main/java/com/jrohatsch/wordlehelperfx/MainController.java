@@ -28,10 +28,10 @@ public class MainController {
         currentPosition = new GridPosition(grid.getRowCount() - 1, grid.getColumnCount() - 1);
         grid.setGridLinesVisible(false);
         resultSet = new ResultSet(grid.getRowCount() - 1, grid.getColumnCount() - 1);
-        dictionary = new Dictionary();
+        dictionary = new Dictionary(grid.getColumnCount());
         var languages = dictionary.getLanguages();
         wordsToTry = dictionary.loadWordlist(languages.get(0));
-        for (var name : dictionary.getLanguages()) {
+        for (var name : languages) {
             var item = new MenuItem();
             item.setText(name);
             item.setOnAction(actionEvent -> languageButton.setText(item.getText()));
@@ -44,11 +44,10 @@ public class MainController {
     public void calculate() {
         wordsToTry = dictionary.loadWordlist(languageButton.getText());
 
-        var input = FilterWords.convert(resultSet);
-        input.forEach(entry -> wordsToTry = FilterWords.filterWords(wordsToTry, entry.getKey(), entry.getValue()));
+        resultSet.getCompleteWords().forEach(word -> wordsToTry = FilterWords.filterWords(wordsToTry, word));
 
         displayedwords.getItems().clear();
-        wordsToTry.forEach(word -> displayedwords.getItems().add(word.toUpperCase()));
+        wordsToTry.forEach(word -> displayedwords.getItems().add(word));
     }
 
     public void handleKeyPressed(String character) {
@@ -56,8 +55,8 @@ public class MainController {
         if (character.equals("Backspace")) {
             // delete character at current index
             currentPosition.decrementPosition();
-            grid.getChildren().removeIf(node -> node.getId() != null && node.getId().equals("Letter-%d-%d".formatted(currentPosition.getColumnPosition(), currentPosition.getRowPosition())));
-            resultSet.remove(currentPosition.getColumnPosition(), currentPosition.getRowPosition());
+            grid.getChildren().removeIf(node -> node.getId() != null && node.getId().equals(currentPosition.getPosition().generateID()));
+            resultSet.remove(currentPosition.getPosition());
             return;
         }
 
@@ -70,26 +69,27 @@ public class MainController {
             return;
         }
 
-        final int columnIndex = currentPosition.getColumnPosition();
-        final int rowIndex = currentPosition.getRowPosition();
-        Button text = new Button(character);
-        text.setId("Letter-%d-%d".formatted(columnIndex, rowIndex));
-        resultSet.initState(character, columnIndex, rowIndex);
-        text.setStyle("-fx-base: grey;");
-        text.setPrefWidth(Double.MAX_VALUE);
-        text.setPrefHeight(Double.MAX_VALUE);
-        text.setOnAction(a -> {
-            resultSet.updateState(character, columnIndex, rowIndex);
-            String color = switch (resultSet.getState(columnIndex, rowIndex)) {
-                case NOT_IN_WORD -> "grey";
-                case IN_WORD -> "yellow";
-                case IN_WORD_AND_CORRECT_POSITION -> "green";
-            };
-            text.setStyle("-fx-base: %s;".formatted(color));
-
+        Position position = currentPosition.getPosition();
+        Button button = new Button(character);
+        button.setId(position.generateID());
+        resultSet.initState(character, position);
+        updateColor(position, button);
+        button.setPrefWidth(Double.MAX_VALUE);
+        button.setPrefHeight(Double.MAX_VALUE);
+        button.setOnAction(a -> {
+            resultSet.updateState(character, position);
+            updateColor(position, button);
         });
-        grid.add(text, columnIndex, rowIndex, 1, 1);
+        grid.add(button, position.column(), position.row(), 1, 1);
         currentPosition.incrementPosition();
     }
 
+    private void updateColor(Position position, Button button) {
+        String color = switch (resultSet.getState(position)) {
+            case NOT_IN_WORD -> "grey";
+            case IN_WORD_OTHER_POSITION -> "yellow";
+            case IN_WORD_AND_CORRECT_POSITION -> "green";
+        };
+        button.setStyle("-fx-base: %s;".formatted(color));
+    }
 }
