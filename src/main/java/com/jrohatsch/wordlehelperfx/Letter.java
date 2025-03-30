@@ -1,6 +1,6 @@
 package com.jrohatsch.wordlehelperfx;
 
 class Letter {
-    String letter;
+    char letter;
     LetterState letterState;
 }

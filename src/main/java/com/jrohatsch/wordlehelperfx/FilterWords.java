@@ -7,16 +7,17 @@ import java.util.function.Predicate;
 public class FilterWords {
 
     public static List<String> filterWords(List<String> words, Letter[] word) {
-        List<String> not_contained_chars = new ArrayList<>();
-        List<String> contained_chars = new ArrayList<>();
+        List<Character> not_contained_chars = new ArrayList<>();
+        List<Character> contained_chars = new ArrayList<>();
         int position = 0;
         for (Letter letter : word) {
             final int currentPosition = position;
-            final char character = letter.letter.charAt(0);
+            final char character = letter.letter;
+
             switch (letter.letterState) {
-                case NOT_IN_WORD -> not_contained_chars.add(letter.letter);
+                case NOT_IN_WORD -> not_contained_chars.add(character);
                 case IN_WORD_OTHER_POSITION -> {
-                    Predicate<String> letterMissing = a -> (!a.contains(letter.letter));
+                    Predicate<String> letterMissing = a -> a.indexOf(character) == -1;
                     Predicate<String> letterAtWrongPosition = a -> (a.charAt(currentPosition) == character);
 
                     words.removeIf(letterMissing.or(letterAtWrongPosition));
@@ -32,7 +33,7 @@ public class FilterWords {
 
         not_contained_chars.removeIf(contained_chars::contains);
 
-        not_contained_chars.forEach((String not_contained) -> words.removeIf(wordToCheck -> (wordToCheck.contains(not_contained))));
+        not_contained_chars.forEach((Character not_contained) -> words.removeIf(wordToCheck -> (wordToCheck.indexOf(not_contained) != -1)));
 
         return words;
     }

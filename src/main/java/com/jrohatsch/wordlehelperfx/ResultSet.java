@@ -13,12 +13,12 @@ public class ResultSet {
 
     private void initState(String letter, int columnIndex, int rowIndex) {
         letters[rowIndex][columnIndex] = new Letter();
-        letters[rowIndex][columnIndex].letter = letter;
+        letters[rowIndex][columnIndex].letter = letter.charAt(0);
 
         // check if the letter was already correct at that position
         if (rowIndex > 0) {
             var previousRowLetter = letters[rowIndex - 1][columnIndex];
-            if (previousRowLetter.letter.equals(letter) && previousRowLetter.letterState == LetterState.IN_WORD_AND_CORRECT_POSITION) {
+            if (previousRowLetter != null && previousRowLetter.letter == letter.charAt(0) && previousRowLetter.letterState == LetterState.IN_WORD_AND_CORRECT_POSITION) {
                 letters[rowIndex][columnIndex].letterState = LetterState.IN_WORD_AND_CORRECT_POSITION;
             } else {
                 letters[rowIndex][columnIndex].letterState = LetterState.NOT_IN_WORD;
@@ -45,7 +45,7 @@ public class ResultSet {
             };
         } else {
             var newLetter = new Letter();
-            newLetter.letter = letter;
+            newLetter.letter = letter.charAt(0);
             newLetter.letterState = LetterState.NOT_IN_WORD;
             letters[rowIndex][columnIndex] = newLetter;
         }
@@ -80,7 +80,7 @@ public class ResultSet {
     }
 
     public List<Letter[]> getCompleteWords() {
-        return Arrays.stream(letters).filter(word -> Arrays.stream(word).allMatch(letter -> letter != null && letter.letter != null && letter.letterState != null)).collect(Collectors.toList());
+        return Arrays.stream(letters).filter(word -> Arrays.stream(word).allMatch(letter -> letter != null && letter.letter != 0 && letter.letterState != null)).collect(Collectors.toList());
     }
 }
 

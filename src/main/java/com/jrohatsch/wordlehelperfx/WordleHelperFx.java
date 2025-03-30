@@ -18,6 +18,10 @@ public class WordleHelperFx extends Application {
         Scene scene = new Scene(fxmlLoader.load(), 549, 428);
         var controller = (MainController) fxmlLoader.getController();
         controller.init();
+
+        Application.setUserAgentStylesheet(WordleHelperFx.class.getResource("primer-light.css").toString());
+
+        stage.setResizable(false);
         stage.setTitle("WordleHelperFx");
         stage.setScene(scene);
         stage.show();

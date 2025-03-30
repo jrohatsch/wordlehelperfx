@@ -4,9 +4,11 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class Dictionary {
+    public static final Predicate<Character> CHAR_FORBIDDEN = character -> "ABCDEFGHIJKLMNOPQRSTUVWXYZ".indexOf(character) == -1;
     private final int WORD_LENGTH;
     private final Map<String, List<String>> cache;
 
@@ -15,9 +17,25 @@ public class Dictionary {
         WORD_LENGTH = wordLength;
     }
 
+    private Predicate<String> filterWords() {
+        Predicate<String> correctLength = text -> text.length() == WORD_LENGTH;
+        Predicate<String> containsForbiddenCharacter = text -> {
+            for (int i = 0; i < text.length(); ++i) {
+                if (CHAR_FORBIDDEN.test(text.charAt(i))) {
+                    return true;
+                }
+            }
+            return false;
+        };
+        return correctLength.and(containsForbiddenCharacter.negate());
+    }
+
     private List<String> readWordList(InputStream input) {
         var reader = new BufferedReader(new InputStreamReader(input));
-        return reader.lines().filter(word -> word.length() == WORD_LENGTH).map(String::toUpperCase).distinct().collect(Collectors.toList());
+        return reader.lines().filter(word -> word.length() == WORD_LENGTH).
+                map(String::toUpperCase).distinct()
+                .filter(this.filterWords())
+                .collect(Collectors.toList());
     }
 
     public List<String> loadWordlist(String language) {
